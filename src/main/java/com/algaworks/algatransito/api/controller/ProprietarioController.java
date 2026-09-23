@@ -1,5 +1,6 @@
 package com.algaworks.algatransito.api.controller;
 
+import com.algaworks.algatransito.domain.Exception.NegocioException;
 import com.algaworks.algatransito.domain.model.Proprietario;
 import com.algaworks.algatransito.domain.repository.ProprietarioRepository;
 import com.algaworks.algatransito.domain.service.RegistroProprietarioService;
@@ -39,8 +40,8 @@ public class ProprietarioController {
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
     public Proprietario adicionar(@Valid @RequestBody Proprietario proprietario) {
-        return proprietarioRepository.save(proprietario);
-        //return proprietarioRepository.save(proprietario);
+        return registroProprietarioService.salvar(proprietario);
+        //return proprietarioRepository.save(proprietario); (medoto JpaRepository)
     }
 
     @PutMapping("/{proprietarioId}")
@@ -67,6 +68,11 @@ public class ProprietarioController {
         registroProprietarioService.excluir(proprietarioRepository.findById(proprietarioId).get());
         return ResponseEntity.noContent().build();
 
+    }
+
+    @ExceptionHandler(NegocioException.class)
+    public ResponseEntity<String> capturarExcecao(NegocioException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
 }
